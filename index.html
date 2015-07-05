@@ -7,7 +7,8 @@ body {
 }
 
 circle {
-  fill: #000;
+  fill: #330D23;
+  cursor: pointer;
 }
 
 .axis path,
@@ -75,7 +76,37 @@ var svg = d3.select("#chart")
               .attr("width", width + margin.left + margin.right)
               .attr("height", height + margin.top + margin.bottom)
             .append("g")
-              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");;
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var highlightNearest = function(d) {
+  var x = xScale(parseFloat(d.property));
+  var y = yScale(parseFloat(d.violence));
+  var items = [];
+
+  $.each(d3.selectAll(".dot")[0], function() {
+    var d = d3.select(this).data()[0];
+    var dist = Math.sqrt(
+      Math.pow(x - xScale(parseFloat(d.property)), 2) +
+      Math.pow(y - yScale(parseFloat(d.violence)), 2)
+      );
+    items.push({"c": this, "d": dist})
+  });
+
+  items.sort(function(a, b) {
+    if (a.d > b.d) { return 1; }
+    if (a.d < b.d) { return -1; }
+    return 0;
+  });
+
+  var nb = d3.select(items[1].c).data()[0];
+
+  d3.selectAll(".dot")
+    .style("fill", function(f) {
+      if (f.state === d.state) { return "#6F318C"; }
+      if (f.state === nb.state) { return "#C657FA"; }
+      return "#330D23";
+    });
+}
 
 tip = d3.tip()
   .attr("class", "d3-tip")
@@ -119,7 +150,10 @@ d3.csv("data/data.csv", function(error, data) {
      .attr("r", 4)
      .attr("cx", function(d) {return xScale(parseFloat(d.property));})
      .attr("cy", function(d) {return yScale(parseFloat(d.violence));})
-     .on("mouseover", tip.show)
+     .on("mouseover", function(d) {
+       highlightNearest(d);
+       tip.show(d);
+    })
      .on("mouseout", tip.hide);
 });
 </script>
