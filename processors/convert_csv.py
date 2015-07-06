@@ -26,7 +26,7 @@ if __name__ == "__main__":
     regions = ["Middle Atlantic", "Midwest", "East North Central",
                "West North Central", "South", "South Atlantic",
                "East South Central", "West South Central", "West",
-               "Mountain", "Pacific"]
+               "Mountain.", "Pacific"]
     current_state = None
     payload = []
 
