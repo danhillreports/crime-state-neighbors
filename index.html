@@ -6,9 +6,10 @@ body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-circle {
-  fill: #330D23;
+.state-dot {
+  color: #330D23;
   cursor: pointer;
+  font-family: 'StateFaceRegular';
 }
 
 .axis text { font-size: 0.7em; }
@@ -19,7 +20,7 @@ circle {
   shape-rendering: crispEdges;
 }
 
-.other-state-text {
+.other-state-container {
   border-bottom: 1px solid black;
   display: inline-block;
   padding-bottom: 3px;
@@ -56,6 +57,21 @@ div#chart { max-width:600px; }
   top: 100%;
   left: 0;
 }
+
+@font-face {
+   font-family: 'StateFaceRegular';
+   src: url('font/webfont/stateface-regular-webfont.eot');
+   src: url('font/webfont/stateface-regular-webfont.eot?#iefix') format('embedded-opentype'),
+        url('font/webfont/stateface-regular-webfont.woff') format('woff'),
+        url('font/webfont/stateface-regular-webfont.ttf') format('truetype'),
+        url('font/webfont/stateface-regular-webfont.svg#StateFaceRegular') format('svg');
+   font-weight: normal;
+   font-style: normal;
+}
+
+.other-state-sf {
+  font-family: 'StateFaceRegular';
+}
 </style>
 <body>
 
@@ -65,7 +81,12 @@ div#chart { max-width:600px; }
     <select id="state-select">
       <option value="">Select a state</option>
     </select>
-    state between 2012 and 2013 were closest to <span class="other-state-text"></span>.
+    state between 2012 and 2013 were closest to
+      <span class="other-state-container">
+        <span class="other-state-sf"></span>
+        <span class="other-state-text"></span>
+      </span>
+    .
   </p>
 </div>
 
@@ -102,7 +123,7 @@ var highlightNearest = function(d) {
   var y = yScale(parseFloat(d.violence));
   var items = [];
 
-  $.each(d3.selectAll(".dot")[0], function() {
+  $.each(d3.selectAll(".state-dot")[0], function() {
     var d = d3.select(this).data()[0];
     var dist = Math.sqrt(
       Math.pow(x - xScale(parseFloat(d.property)), 2) +
@@ -118,9 +139,10 @@ var highlightNearest = function(d) {
   });
 
   var nb = d3.select(items[1].c).data()[0];
+  $(".other-state-sf").text(nb.sf);
   $(".other-state-text").text(nb.state);
 
-  d3.selectAll(".dot")
+  d3.selectAll(".state-dot")
     .style("fill", function(f) {
       if (f.state === d.state) { return "#6F318C"; }
       if (f.state === nb.state) { return "#C657FA"; }
@@ -163,14 +185,15 @@ d3.csv("data/data.csv", function(error, data) {
       .style("text-anchor", "end")
       .text("Violence pct. chg.");
 
-  svg.selectAll(".dot")
+  svg.selectAll(".state-dot")
      .data(data)
-   .enter().append("circle")
-     .attr("class", "dot")
+   .enter().append("text")
+     .attr("class", "state-dot")
      .attr("r", 4)
-     .attr("cx", function(d) {return xScale(parseFloat(d.property));})
-     .attr("cy", function(d) {return yScale(parseFloat(d.violence));})
+     .attr("x", function(d) {return xScale(parseFloat(d.property));})
+     .attr("y", function(d) {return yScale(parseFloat(d.violence));})
      .attr("data-state", function(d) {return d.state;})
+     .text(function(d) {return d.sf;})
      .on("mouseover", function(d) {
       $("#state-select").val(d.state);
       $("#state-select").change();
@@ -203,7 +226,7 @@ var initSelect = function(data) {
         $("[data-state='" + val + "']")
       ).data()[0]
     );
-    $(".other-state-text").css("min-width", 0);
+    $(".other-state-container").css("min-width", 0);
   });
 
 }
