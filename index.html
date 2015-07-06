@@ -7,7 +7,7 @@ body {
 }
 
 .state-dot {
-  color: #330D23;
+  fill: #8c8c8c;
   cursor: pointer;
   font-family: 'StateFaceRegular';
 }
@@ -31,8 +31,8 @@ div#chart { max-width:600px; }
 
 /* D3 TIP */
 .d3-tip {
-  line-height: 1;
-  padding: 12px;
+  font-size: 12px;
+  padding: 0px 5px;
   background: rgba(0, 0, 0, 0.8);
   color: #fff;
   border-radius: 2px;
@@ -42,9 +42,7 @@ div#chart { max-width:600px; }
 .d3-tip:after {
   box-sizing: border-box;
   display: inline;
-  font-size: 10px;
   width: 100%;
-  line-height: 1;
   color: rgba(0, 0, 0, 0.8);
   content: "\25BC";
   position: absolute;
@@ -71,17 +69,19 @@ div#chart { max-width:600px; }
 
 .other-state-sf {
   font-family: 'StateFaceRegular';
+  color: #C657FA;
 }
 </style>
 <body>
 
 <div>
+  <small></small>
   <p>The percentage changes in property and violent crime rates in<p>
   <p>
     <select id="state-select">
       <option value="">Select a state</option>
     </select>
-    state between 2012 and 2013 were closest to
+      between 2012 and 2013 were closest to
       <span class="other-state-container">
         <span class="other-state-sf"></span>
         <span class="other-state-text"></span>
@@ -146,7 +146,7 @@ var highlightNearest = function(d) {
     .style("fill", function(f) {
       if (f.state === d.state) { return "#6F318C"; }
       if (f.state === nb.state) { return "#C657FA"; }
-      return "#330D23";
+      return "#8c8c8c";
     });
 }
 
@@ -170,7 +170,7 @@ d3.csv("data/data.csv", function(error, data) {
       .attr("x", width)
       .attr("y", -6)
       .style("text-anchor", "end")
-      .text("Property pct. chg.");
+      .text("Property rate change");
 
   // y-axis
   svg.append("g")
@@ -183,13 +183,12 @@ d3.csv("data/data.csv", function(error, data) {
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("Violence pct. chg.");
+      .text("Violence rate change");
 
   svg.selectAll(".state-dot")
      .data(data)
    .enter().append("text")
      .attr("class", "state-dot")
-     .attr("r", 4)
      .attr("x", function(d) {return xScale(parseFloat(d.property));})
      .attr("y", function(d) {return yScale(parseFloat(d.violence));})
      .attr("data-state", function(d) {return d.state;})
@@ -228,7 +227,6 @@ var initSelect = function(data) {
     );
     $(".other-state-container").css("min-width", 0);
   });
-
 }
 </script>
 
